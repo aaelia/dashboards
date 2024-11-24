@@ -1,15 +1,24 @@
 import axios from 'axios';
 
-const PROMETHEUS_URL = process.env.REACT_APP_PROMETHEUS_URL || 'http://localhost:9090';
+const PROMETHEUS_URL = 'http://localhost:9090';
 
 export const fetchMetrics = async (query, start, end, step = '15s') => {
   try {
+    // Convert the time range to match Prometheus API requirements
+    const now = Math.floor(Date.now() / 1000);
+    const timeRange = {
+      start: now - 3600, // 1 hour ago
+      end: now,
+      step: '15s'
+    };
+
+    // Use the Prometheus HTTP API endpoint
     const response = await axios.get(`${PROMETHEUS_URL}/api/v1/query_range`, {
       params: {
         query,
-        start,
-        end,
-        step,
+        start: timeRange.start,
+        end: timeRange.end,
+        step: timeRange.step,
       },
     });
 
@@ -23,8 +32,9 @@ export const fetchMetrics = async (query, start, end, step = '15s') => {
   }
 };
 
+// These queries match the ones from your Prometheus URL
 export const getMetricQueries = {
-  cpu: 'rate(node_cpu_seconds_total{mode="user"}[5m])',
-  memory: 'node_memory_MemUsed_bytes',
-  network: 'rate(node_network_receive_bytes_total[5m])',
+  chunks: 'rate(prometheus_tsdb_head_chunks_created_total[1m])',
+  targetCount: 'count(prometheus_target_interval_length_seconds)',
+  targetLatency: 'prometheus_target_interval_length_seconds{quantile="0.99"}',
 };
