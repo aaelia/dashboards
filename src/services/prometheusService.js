@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const PROMETHEUS_URL = 'http://localhost:9090';
+const PROMETHEUS_URL = process.env.REACT_APP_PROMETHEUS_URL || 'http://localhost:9090';
 
 export const fetchMetrics = async (query, start, end, step = '15s') => {
   try {
