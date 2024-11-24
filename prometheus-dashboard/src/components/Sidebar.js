@@ -1,15 +1,15 @@
 import React from 'react';
 import { Drawer, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
-import { Dashboard, Memory, Storage, NetworkCheck } from '@mui/icons-material';
+import { Dashboard, Storage, Speed, Timer } from '@mui/icons-material';
 
 const drawerWidth = 240;
 
 const Sidebar = ({ onMenuSelect }) => {
   const menuItems = [
     { text: 'Overview', icon: <Dashboard />, id: 'overview' },
-    { text: 'CPU Metrics', icon: <Memory />, id: 'cpu' },
-    { text: 'Memory Usage', icon: <Storage />, id: 'memory' },
-    { text: 'Network Stats', icon: <NetworkCheck />, id: 'network' },
+    { text: 'TSDB Chunks', icon: <Storage />, id: 'chunks' },
+    { text: 'Target Count', icon: <Speed />, id: 'targetCount' },
+    { text: 'Target Latency', icon: <Timer />, id: 'targetLatency' },
   ];
 
   return (

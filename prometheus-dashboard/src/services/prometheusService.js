@@ -24,7 +24,7 @@ export const fetchMetrics = async (query, start, end, step = '15s') => {
 };
 
 export const getMetricQueries = {
-  cpu: 'rate(node_cpu_seconds_total{mode="user"}[5m])',
-  memory: 'node_memory_MemUsed_bytes',
-  network: 'rate(node_network_receive_bytes_total[5m])',
+  chunks: 'rate(prometheus_tsdb_head_chunks_created_total[1m])',
+  targetCount: 'count(prometheus_target_interval_length_seconds)',
+  targetLatency: 'prometheus_target_interval_length_seconds{quantile="0.99"}',
 };
