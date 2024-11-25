@@ -1,15 +1,19 @@
 import React from 'react';
 import { Drawer, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
-import { Dashboard, Storage, Speed, Timer } from '@mui/icons-material';
+import * as Icons from '@mui/icons-material';
+import { getPanelConfig } from '../services/prometheusService';
 
 const drawerWidth = 240;
 
 const Sidebar = ({ onMenuSelect }) => {
+  const panels = getPanelConfig();
   const menuItems = [
-    { text: 'Overview', icon: <Dashboard />, id: 'overview' },
-    { text: 'TSDB Chunks (30m)', icon: <Storage />, id: 'chunks' },
-    { text: 'Target Count (1h)', icon: <Speed />, id: 'targetCount' },
-    { text: 'Target Latency (5m)', icon: <Timer />, id: 'targetLatency' },
+    { text: 'Overview', icon: 'Dashboard', id: 'overview' },
+    ...panels.map(panel => ({
+      text: panel.menuText,
+      icon: panel.icon,
+      id: panel.id
+    }))
   ];
 
   return (
@@ -28,16 +32,19 @@ const Sidebar = ({ onMenuSelect }) => {
         <Typography variant="h6">Prometheus Metrics</Typography>
       </div>
       <List>
-        {menuItems.map((item) => (
-          <ListItem
-            button
-            key={item.id}
-            onClick={() => onMenuSelect(item.id)}
-          >
-            <ListItemIcon>{item.icon}</ListItemIcon>
-            <ListItemText primary={item.text} />
-          </ListItem>
-        ))}
+        {menuItems.map((item) => {
+          const Icon = Icons[item.icon];
+          return (
+            <ListItem
+              button
+              key={item.id}
+              onClick={() => onMenuSelect(item.id)}
+            >
+              <ListItemIcon>{Icon && <Icon />}</ListItemIcon>
+              <ListItemText primary={item.text} />
+            </ListItem>
+          );
+        })}
       </List>
     </Drawer>
   );
