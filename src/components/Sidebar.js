@@ -1,15 +1,15 @@
 import React from 'react';
 import { Drawer, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
-import { Dashboard, Memory, Storage, NetworkCheck } from '@mui/icons-material';
+import { Dashboard, Storage, Speed, Timer } from '@mui/icons-material';
 
 const drawerWidth = 240;
 
 const Sidebar = ({ onMenuSelect }) => {
   const menuItems = [
     { text: 'Overview', icon: <Dashboard />, id: 'overview' },
-    { text: 'CPU Metrics', icon: <Memory />, id: 'cpu' },
-    { text: 'Memory Usage', icon: <Storage />, id: 'memory' },
-    { text: 'Network Stats', icon: <NetworkCheck />, id: 'network' },
+    { text: 'TSDB Chunks (30m)', icon: <Storage />, id: 'chunks' },
+    { text: 'Target Count (1h)', icon: <Speed />, id: 'targetCount' },
+    { text: 'Target Latency (5m)', icon: <Timer />, id: 'targetLatency' },
   ];
 
   return (
@@ -25,7 +25,7 @@ const Sidebar = ({ onMenuSelect }) => {
       }}
     >
       <div style={{ padding: '20px' }}>
-        <Typography variant="h6">Prometheus Dashboard</Typography>
+        <Typography variant="h6">Prometheus Metrics</Typography>
       </div>
       <List>
         {menuItems.map((item) => (
