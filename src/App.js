@@ -7,19 +7,33 @@ import { fetchMetrics, getMetricQueries } from './services/prometheusService';
 function App() {
   const [selectedPanel, setSelectedPanel] = useState('overview');
   const [metricsData, setMetricsData] = useState({
-    chunks: null,
-    targetCount: null,
-    targetLatency: null,
+    chunks: [],
+    targetCount: [],
+    targetLatency: [],
   });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetchMetrics();
+        const [chunksData, targetCountData, targetLatencyData] = await Promise.all([
+          fetchMetrics(getMetricQueries.chunks.query, getMetricQueries.chunks.timeRange),
+          fetchMetrics(getMetricQueries.targetCount.query, getMetricQueries.targetCount.timeRange),
+          fetchMetrics(getMetricQueries.targetLatency.query, getMetricQueries.targetLatency.timeRange),
+        ]);
+
         setMetricsData({
-          chunks: response[getMetricQueries.chunks],
-          targetCount: response[getMetricQueries.targetCount],
-          targetLatency: response[getMetricQueries.targetLatency],
+          chunks: chunksData[0]?.values.map(([timestamp, value]) => ({
+            timestamp: new Date(timestamp * 1000).toLocaleTimeString(),
+            value: parseFloat(value),
+          })) || [],
+          targetCount: targetCountData[0]?.values.map(([timestamp, value]) => ({
+            timestamp: new Date(timestamp * 1000).toLocaleTimeString(),
+            value: parseFloat(value),
+          })) || [],
+          targetLatency: targetLatencyData[0]?.values.map(([timestamp, value]) => ({
+            timestamp: new Date(timestamp * 1000).toLocaleTimeString(),
+            value: parseFloat(value) * 1000, // Convert to milliseconds
+          })) || [],
         });
       } catch (error) {
         console.error('Error fetching metrics:', error);
