@@ -1,0 +1,32 @@
+{
+  "panels": [
+    {
+      "id": "chunks",
+      "title": "TSDB Chunks Creation Rate",
+      "menuText": "TSDB Chunks (30m)",
+      "icon": "Storage",
+      "query": "rate(prometheus_tsdb_head_chunks_created_total[1m])",
+      "timeRange": 1800,
+      "unit": "chunks/s"
+    },
+    {
+      "id": "targetCount",
+      "title": "Target Count",
+      "menuText": "Target Count (1h)",
+      "icon": "Speed",
+      "query": "count(prometheus_target_interval_length_seconds)",
+      "timeRange": 3600,
+      "unit": "targets"
+    },
+    {
+      "id": "targetLatency",
+      "title": "Target Latency",
+      "menuText": "Target Latency (5m)",
+      "icon": "Timer",
+      "query": "prometheus_target_interval_length_seconds{quantile=\"0.99\"}",
+      "timeRange": 300,
+      "unit": "ms",
+      "valueMultiplier": 1000
+    }
+  ]
+}
