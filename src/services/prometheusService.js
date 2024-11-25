@@ -14,8 +14,8 @@ export const fetchMetrics = async (query, timeRange) => {
 
     const response = await axios.get(`${PROMETHEUS_URL}/api/v1/query_range`, { params });
 
-    if (response.data.status === 'success') {
-      return response.data.data.result;
+    if (response.data) {
+      return response.data;
     }
     throw new Error('Failed to fetch metrics');
   } catch (error) {
