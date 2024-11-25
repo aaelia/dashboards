@@ -7,36 +7,19 @@ import { fetchMetrics, getMetricQueries } from './services/prometheusService';
 function App() {
   const [selectedPanel, setSelectedPanel] = useState('overview');
   const [metricsData, setMetricsData] = useState({
-    cpu: [],
-    memory: [],
-    network: [],
+    chunks: null,
+    targetCount: null,
+    targetLatency: null,
   });
 
   useEffect(() => {
     const fetchData = async () => {
-      const end = Math.floor(Date.now() / 1000);
-      const start = end - 3600; // Last hour
-
       try {
-        const [cpuData, memoryData, networkData] = await Promise.all([
-          fetchMetrics(getMetricQueries.cpu, start, end),
-          fetchMetrics(getMetricQueries.memory, start, end),
-          fetchMetrics(getMetricQueries.network, start, end),
-        ]);
-
+        const response = await fetchMetrics();
         setMetricsData({
-          cpu: cpuData[0]?.values.map(([timestamp, value]) => ({
-            timestamp: new Date(timestamp * 1000).toLocaleTimeString(),
-            value: parseFloat(value),
-          })) || [],
-          memory: memoryData[0]?.values.map(([timestamp, value]) => ({
-            timestamp: new Date(timestamp * 1000).toLocaleTimeString(),
-            value: parseFloat(value) / (1024 * 1024 * 1024), // Convert to GB
-          })) || [],
-          network: networkData[0]?.values.map(([timestamp, value]) => ({
-            timestamp: new Date(timestamp * 1000).toLocaleTimeString(),
-            value: parseFloat(value) / (1024 * 1024), // Convert to MB/s
-          })) || [],
+          chunks: response[getMetricQueries.chunks],
+          targetCount: response[getMetricQueries.targetCount],
+          targetLatency: response[getMetricQueries.targetLatency],
         });
       } catch (error) {
         console.error('Error fetching metrics:', error);
@@ -54,22 +37,22 @@ function App() {
       return (
         <>
           <Grid item xs={12} md={4}>
-            <DashboardPanel title="CPU Usage" data={metricsData.cpu} dataKey="value" />
+            <DashboardPanel title="TSDB Chunks Creation Rate" data={metricsData.chunks} />
           </Grid>
           <Grid item xs={12} md={4}>
-            <DashboardPanel title="Memory Usage (GB)" data={metricsData.memory} dataKey="value" />
+            <DashboardPanel title="Target Count" data={metricsData.targetCount} />
           </Grid>
           <Grid item xs={12} md={4}>
-            <DashboardPanel title="Network Traffic (MB/s)" data={metricsData.network} dataKey="value" />
+            <DashboardPanel title="Target Latency (ms)" data={metricsData.targetLatency} />
           </Grid>
         </>
       );
     }
 
     const panelData = {
-      cpu: { title: 'CPU Usage', data: metricsData.cpu },
-      memory: { title: 'Memory Usage (GB)', data: metricsData.memory },
-      network: { title: 'Network Traffic (MB/s)', data: metricsData.network },
+      chunks: { title: 'TSDB Chunks Creation Rate', data: metricsData.chunks },
+      targetCount: { title: 'Target Count', data: metricsData.targetCount },
+      targetLatency: { title: 'Target Latency (ms)', data: metricsData.targetLatency },
     }[selectedPanel];
 
     return (
