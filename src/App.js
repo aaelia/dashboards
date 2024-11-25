@@ -51,27 +51,27 @@ function App() {
       return (
         <>
           <Grid item xs={12} md={4}>
-            <DashboardPanel title="TSDB Chunks Creation Rate" data={metricsData.chunks} />
+            <DashboardPanel title="TSDB Chunks Creation Rate (30m)" data={metricsData.chunks} />
           </Grid>
           <Grid item xs={12} md={4}>
-            <DashboardPanel title="Target Count" data={metricsData.targetCount} />
+            <DashboardPanel title="Target Count (1h)" data={metricsData.targetCount} />
           </Grid>
           <Grid item xs={12} md={4}>
-            <DashboardPanel title="Target Latency (ms)" data={metricsData.targetLatency} />
+            <DashboardPanel title="Target Latency (5m)" data={metricsData.targetLatency} />
           </Grid>
         </>
       );
     }
 
     const panelData = {
-      chunks: { title: 'TSDB Chunks Creation Rate', data: metricsData.chunks },
-      targetCount: { title: 'Target Count', data: metricsData.targetCount },
-      targetLatency: { title: 'Target Latency (ms)', data: metricsData.targetLatency },
+      chunks: { title: 'TSDB Chunks Creation Rate (30m)', data: metricsData.chunks },
+      targetCount: { title: 'Target Count (1h)', data: metricsData.targetCount },
+      targetLatency: { title: 'Target Latency (5m)', data: metricsData.targetLatency },
     }[selectedPanel];
 
     return (
       <Grid item xs={12}>
-        <DashboardPanel title={panelData.title} data={panelData.data} dataKey="value" />
+        <DashboardPanel title={panelData.title} data={panelData.data} />
       </Grid>
     );
   };
