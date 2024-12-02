@@ -27,6 +27,17 @@
       "timeRange": 300,
       "unit": "ms",
       "valueMultiplier": 1000
+    },
+    {
+      "id": "scraper",
+      "title": "Scraper Duration",
+      "menuText": "Scraper Duration (5m)",
+      "icon": "Timer",
+      "query": "scrape_duration_seconds",
+      "timeRange": 300,
+      "unit": "ms",
+      "valueMultiplier": 1000
     }
+  
   ]
 }
