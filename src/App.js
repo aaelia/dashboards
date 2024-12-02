@@ -2,15 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { Box, CssBaseline, Grid } from '@mui/material';
 import Sidebar from './components/Sidebar';
 import DashboardPanel from './components/DashboardPanel';
+import SpaceshipLoader from './components/SpaceshipLoader';
 import { fetchMetrics, getPanelConfig } from './services/prometheusService';
 
 function App() {
   const [selectedPanel, setSelectedPanel] = useState('overview');
   const [metricsData, setMetricsData] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
   const panels = getPanelConfig();
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         const results = await Promise.all(
           panels.map(panel => fetchMetrics(panel.id))
@@ -24,6 +27,8 @@ function App() {
         setMetricsData(newData);
       } catch (error) {
         console.error('Error fetching metrics:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -81,6 +86,7 @@ function App() {
           {renderPanels()}
         </Grid>
       </Box>
+      {isLoading && <SpaceshipLoader />}
     </Box>
   );
 }
