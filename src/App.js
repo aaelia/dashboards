@@ -9,11 +9,13 @@ function App() {
   const [selectedPanel, setSelectedPanel] = useState('overview');
   const [metricsData, setMetricsData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const [loadStartTime, setLoadStartTime] = useState(Date.now());
   const panels = getPanelConfig();
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
+      setLoadStartTime(Date.now());
       try {
         const results = await Promise.all(
           panels.map(panel => fetchMetrics(panel.id))
@@ -28,7 +30,13 @@ function App() {
       } catch (error) {
         console.error('Error fetching metrics:', error);
       } finally {
-        setIsLoading(false);
+        // Ensure loader stays visible for at least 5 seconds
+        const elapsedTime = Date.now() - loadStartTime;
+        const remainingTime = Math.max(0, 5000 - elapsedTime);
+        
+        setTimeout(() => {
+          setIsLoading(false);
+        }, remainingTime);
       }
     };
 

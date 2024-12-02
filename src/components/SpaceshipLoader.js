@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
 const SpaceshipLoader = () => {
-  const [isVisible, setIsVisible] = useState(true);
   const [position, setPosition] = useState(0);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [startTime] = useState(Date.now());
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -21,9 +21,17 @@ const SpaceshipLoader = () => {
 
     const animation = setInterval(animationFrame, 16);
 
+    // Force component to stay mounted for at least 5 seconds
+    const minDisplayTime = setTimeout(() => {
+      // This is just to ensure the state update happens after 5 seconds
+      // The actual unmounting is controlled by the parent component
+      setPosition(prev => prev);
+    }, 5000);
+
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       clearInterval(animation);
+      clearTimeout(minDisplayTime);
     };
   }, []);
 
@@ -179,18 +187,28 @@ style.textContent = `
     50% { opacity: 0.3; transform: scale(0.8); }
   }
   @keyframes flicker {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.7; transform: scale(0.98); }
+    0% { opacity: 1; transform: scale(1.02); }
+    50% { opacity: 0.8; transform: scale(0.98); }
+    100% { opacity: 1; transform: scale(1.02); }
   }
   @keyframes trail {
     0% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8) translate(0, 5px); }
     100% { opacity: 0; transform: scale(0.5) translate(0, 10px); }
+  }
+  @keyframes pulse {
+    0% { filter: brightness(1); }
+    50% { filter: brightness(1.2); }
+    100% { filter: brightness(1); }
   }
   .animate-twinkle {
     animation: twinkle 2s ease-in-out infinite;
   }
   .animate-trail {
-    animation: trail 0.8s ease-out infinite;
+    animation: trail 1s ease-out infinite;
+  }
+  .animate-pulse {
+    animation: pulse 1.5s ease-in-out infinite;
   }
 `;
 document.head.appendChild(style);
