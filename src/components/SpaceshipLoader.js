@@ -8,8 +8,8 @@ const SpaceshipLoader = () => {
   useEffect(() => {
     const handleMouseMove = (e) => {
       setMousePosition({
-        x: (e.clientX / window.innerWidth) * 50,
-        y: (e.clientY / window.innerHeight) * 50
+        x: (e.clientX / window.innerWidth - 0.5) * dimensions.width * 0.5,
+        y: (e.clientY / window.innerHeight - 0.5) * dimensions.height * 0.5
       });
     };
 
@@ -35,17 +35,40 @@ const SpaceshipLoader = () => {
     };
   }, []);
 
-  // Complex movement pattern combining multiple sinusoidal waves
-  const baseX = Math.sin(position * Math.PI / 180 * 2) * 150;
-  const baseY = Math.sin(position * Math.PI / 180) * 100;
+  // Get window dimensions for full screen movement
+  const [dimensions, setDimensions] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight
+  });
+
+  // Update dimensions when window resizes
+  useEffect(() => {
+    const handleResize = () => {
+      setDimensions({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Complex movement pattern utilizing full screen
+  const baseX = Math.sin(position * Math.PI / 180 * 2) * (dimensions.width * 0.4);
+  const baseY = Math.sin(position * Math.PI / 180) * (dimensions.height * 0.4);
   
   // Add secondary motion
-  const wobbleX = Math.sin(position * Math.PI / 90) * 20;
-  const wobbleY = Math.cos(position * Math.PI / 45) * 15;
+  const wobbleX = Math.sin(position * Math.PI / 90) * (dimensions.width * 0.05);
+  const wobbleY = Math.cos(position * Math.PI / 45) * (dimensions.height * 0.05);
+  
+  // Add circular motion
+  const circularX = Math.cos(position * Math.PI / 180) * (dimensions.width * 0.2);
+  const circularY = Math.sin(position * Math.PI / 180) * (dimensions.height * 0.2);
   
   // Combine all movements including mouse influence
-  const x = baseX + wobbleX + mousePosition.x;
-  const y = baseY + wobbleY + mousePosition.y;
+  const x = baseX + wobbleX + circularX + mousePosition.x;
+  const y = baseY + wobbleY + circularY + mousePosition.y;
 
   // Calculate rotation based on movement direction
   const rotation = Math.atan2(
@@ -62,15 +85,17 @@ const SpaceshipLoader = () => {
         }}
       >
         {/* Stars background */}
-        {[...Array(20)].map((_, i) => (
+        {[...Array(50)].map((_, i) => (
           <div
             key={i}
             className="absolute w-1 h-1 bg-white rounded-full animate-twinkle"
             style={{
-              left: `${Math.random() * 200 - 100}px`,
-              top: `${Math.random() * 200 - 100}px`,
+              left: `${Math.random() * dimensions.width}px`,
+              top: `${Math.random() * dimensions.height}px`,
               animationDelay: `${Math.random() * 2}s`,
-              opacity: Math.random() * 0.7 + 0.3
+              opacity: Math.random() * 0.7 + 0.3,
+              width: `${Math.random() * 2 + 1}px`,
+              height: `${Math.random() * 2 + 1}px`
             }}
           />
         ))}
