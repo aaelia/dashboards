@@ -77,7 +77,7 @@ function App() {
           ml: { sm: `240px` },
         }}
       >
-        <Grid container spacing={3}>
+        <Grid container spacing={0.625}> {/* 5px spacing */}
           {renderPanels()}
         </Grid>
       </Box>
