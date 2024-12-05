@@ -2,15 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { Box, CssBaseline, Grid } from '@mui/material';
 import Sidebar from './components/Sidebar';
 import DashboardPanel from './components/DashboardPanel';
+import SpaceshipLoader from './components/SpaceshipLoader';
 import { fetchMetrics, getPanelConfig } from './services/prometheusService';
 
 function App() {
   const [selectedPanel, setSelectedPanel] = useState('overview');
   const [metricsData, setMetricsData] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadStartTime, setLoadStartTime] = useState(Date.now());
   const panels = getPanelConfig();
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
+      setLoadStartTime(Date.now());
       try {
         const results = await Promise.all(
           panels.map(panel => fetchMetrics(panel.id))
@@ -24,6 +29,14 @@ function App() {
         setMetricsData(newData);
       } catch (error) {
         console.error('Error fetching metrics:', error);
+      } finally {
+        // Ensure loader stays visible for at least 5 seconds
+        const elapsedTime = Date.now() - loadStartTime;
+        const remainingTime = Math.max(0, 5000 - elapsedTime);
+        
+        setTimeout(() => {
+          setIsLoading(false);
+        }, remainingTime);
       }
     };
 
@@ -77,10 +90,11 @@ function App() {
           ml: { sm: `240px` },
         }}
       >
-        <Grid container spacing={3}>
+        <Grid container spacing={0.625}> {/* 5px spacing */}
           {renderPanels()}
         </Grid>
       </Box>
+      {isLoading && <SpaceshipLoader />}
     </Box>
   );
 }

@@ -33,7 +33,7 @@ const DashboardPanel = ({ title, data, unit }) => {
           <XAxis dataKey="timestamp" />
           <YAxis tickFormatter={formatValue} />
           <Tooltip content={<CustomTooltip />} />
-          <Line type="monotone" dataKey="value" stroke="#8884d8" />
+          <Line type="monotone" dataKey="value" stroke="#0f172a" />
         </LineChart>
       </ResponsiveContainer>
     </Paper>
