@@ -7,7 +7,9 @@ export const getDashboardsConfig = async () => {
     const docSnap = await getDoc(docRef);
     
     if (docSnap.exists()) {
-      return docSnap.data();
+      const data = docSnap.data();
+      console.log('Firestore data:', data);
+      return data;
     } else {
       console.error('No dashboard configuration found!');
       return { panels: [] };

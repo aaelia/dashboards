@@ -44,5 +44,7 @@ export const fetchMetrics = async (panelId) => {
 
 export const getPanelConfig = async () => {
   dashboardConfig = await getDashboardsConfig();
+  console.log('Dashboard config:', dashboardConfig);
+  console.log('Panels:', dashboardConfig.panels);
   return dashboardConfig.panels;
 };

@@ -18,12 +18,14 @@ function App() {
       setLoadStartTime(Date.now());
       try {
         const panelConfig = await getPanelConfig();
+        console.log('Panel config in App:', panelConfig);
         if (!Array.isArray(panelConfig)) {
           console.error('Invalid panel configuration received:', panelConfig);
           return;
         }
 
         setPanels(panelConfig);
+        console.log('Panels state set to:', panelConfig);
         
         const results = await Promise.all(
           panelConfig.map(async panel => {

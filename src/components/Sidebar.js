@@ -15,15 +15,18 @@ const Sidebar = ({ onMenuSelect }) => {
     const fetchPanels = async () => {
       try {
         const panels = await getPanelConfig();
+        console.log('Panels in Sidebar:', panels);
         if (Array.isArray(panels)) {
-          setMenuItems([
+          const newMenuItems = [
             { text: 'Overview', icon: 'Dashboard', id: 'overview' },
             ...panels.map(panel => ({
               text: panel.menuText,
               icon: panel.icon,
               id: panel.id
             }))
-          ]);
+          ];
+          console.log('Setting menu items to:', newMenuItems);
+          setMenuItems(newMenuItems);
         }
       } catch (error) {
         console.error('Error fetching panels:', error);
