@@ -1,20 +1,39 @@
-import React from 'react';
-import { Drawer, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Drawer, List, ListItem, ListItemIcon, ListItemText, Typography, CircularProgress } from '@mui/material';
 import * as Icons from '@mui/icons-material';
 import { getPanelConfig } from '../services/prometheusService';
 
 const drawerWidth = 240;
 
 const Sidebar = ({ onMenuSelect }) => {
-  const panels = getPanelConfig();
-  const menuItems = [
-    { text: 'Overview', icon: 'Dashboard', id: 'overview' },
-    ...panels.map(panel => ({
-      text: panel.menuText,
-      icon: panel.icon,
-      id: panel.id
-    }))
-  ];
+  const [menuItems, setMenuItems] = useState([
+    { text: 'Overview', icon: 'Dashboard', id: 'overview' }
+  ]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPanels = async () => {
+      try {
+        const panels = await getPanelConfig();
+        if (Array.isArray(panels)) {
+          setMenuItems([
+            { text: 'Overview', icon: 'Dashboard', id: 'overview' },
+            ...panels.map(panel => ({
+              text: panel.menuText,
+              icon: panel.icon,
+              id: panel.id
+            }))
+          ]);
+        }
+      } catch (error) {
+        console.error('Error fetching panels:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPanels();
+  }, []);
 
   return (
     <Drawer

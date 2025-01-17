@@ -18,10 +18,11 @@ function App() {
       setLoadStartTime(Date.now());
       try {
         const panelConfig = await getPanelConfig();
-        setPanels(panelConfig);
-        const results = await Promise.all(
-          panelConfig.map(panel => fetchMetrics(panel.id))
-        );
+        if (Array.isArray(panelConfig)) {
+          setPanels(panelConfig);
+          const results = await Promise.all(
+            panelConfig.map(panel => fetchMetrics(panel.id))
+          );
 
         const newData = {};
         results.forEach((result, index) => {
