@@ -61,7 +61,7 @@ function App() {
     const interval = setInterval(fetchData, 15000); // Refresh every 15 seconds
 
     return () => clearInterval(interval);
-  }, [panels]);
+  }, []);
 
   const renderPanels = () => {
     if (selectedPanel === 'overview') {
