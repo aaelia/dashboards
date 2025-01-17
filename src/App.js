@@ -2,41 +2,43 @@ import React, { useState, useEffect } from 'react';
 import { Box, CssBaseline, Grid } from '@mui/material';
 import Sidebar from './components/Sidebar';
 import DashboardPanel from './components/DashboardPanel';
-import { fetchMetrics, getMetricQueries } from './services/prometheusService';
+import SpaceshipLoader from './components/SpaceshipLoader';
+import { fetchMetrics, getPanelConfig } from './services/prometheusService';
 
 function App() {
   const [selectedPanel, setSelectedPanel] = useState('overview');
-  const [metricsData, setMetricsData] = useState({
-    chunks: [],
-    targetCount: [],
-    targetLatency: [],
-  });
+  const [metricsData, setMetricsData] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadStartTime, setLoadStartTime] = useState(Date.now());
+  const [panels, setPanels] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
+      setLoadStartTime(Date.now());
       try {
-        const [chunksData, targetCountData, targetLatencyData] = await Promise.all([
-          fetchMetrics(getMetricQueries.chunks.query, getMetricQueries.chunks.timeRange),
-          fetchMetrics(getMetricQueries.targetCount.query, getMetricQueries.targetCount.timeRange),
-          fetchMetrics(getMetricQueries.targetLatency.query, getMetricQueries.targetLatency.timeRange),
-        ]);
+        const panelConfig = await getPanelConfig();
+        setPanels(panelConfig);
+        const results = await Promise.all(
+          panelConfig.map(panel => fetchMetrics(panel.id))
+        );
 
-        setMetricsData({
-          chunks: chunksData[0]?.values.map(([timestamp, value]) => ({
-            timestamp: new Date(timestamp * 1000).toLocaleTimeString(),
-            value: parseFloat(value),
-          })) || [],
-          targetCount: targetCountData[0]?.values.map(([timestamp, value]) => ({
-            timestamp: new Date(timestamp * 1000).toLocaleTimeString(),
-            value: parseFloat(value),
-          })) || [],
-          targetLatency: targetLatencyData[0]?.values.map(([timestamp, value]) => ({
-            timestamp: new Date(timestamp * 1000).toLocaleTimeString(),
-            value: parseFloat(value) * 1000, // Convert to milliseconds
-          })) || [],
+        const newData = {};
+        results.forEach((result, index) => {
+          newData[panels[index].id] = result;
         });
+
+        setMetricsData(newData);
       } catch (error) {
         console.error('Error fetching metrics:', error);
+      } finally {
+        // Ensure loader stays visible for at least 5 seconds
+        const elapsedTime = Date.now() - loadStartTime;
+        const remainingTime = Math.max(0, 5000 - elapsedTime);
+        
+        setTimeout(() => {
+          setIsLoading(false);
+        }, remainingTime);
       }
     };
 
@@ -44,34 +46,35 @@ function App() {
     const interval = setInterval(fetchData, 15000); // Refresh every 15 seconds
 
     return () => clearInterval(interval);
-  }, []);
+  }, [panels]);
 
   const renderPanels = () => {
     if (selectedPanel === 'overview') {
       return (
         <>
-          <Grid item xs={12} md={4}>
-            <DashboardPanel title="TSDB Chunks Creation Rate" data={metricsData.chunks} />
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <DashboardPanel title="Target Count" data={metricsData.targetCount} />
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <DashboardPanel title="Target Latency (ms)" data={metricsData.targetLatency} />
-          </Grid>
+          {panels.map(panel => (
+            <Grid item xs={12} md={4} key={panel.id}>
+              <DashboardPanel
+                title={metricsData[panel.id]?.title || panel.title}
+                data={metricsData[panel.id]?.data || []}
+                unit={metricsData[panel.id]?.unit || panel.unit}
+              />
+            </Grid>
+          ))}
         </>
       );
     }
 
-    const panelData = {
-      chunks: { title: 'TSDB Chunks Creation Rate', data: metricsData.chunks },
-      targetCount: { title: 'Target Count', data: metricsData.targetCount },
-      targetLatency: { title: 'Target Latency (ms)', data: metricsData.targetLatency },
-    }[selectedPanel];
+    const panel = panels.find(p => p.id === selectedPanel);
+    if (!panel) return null;
 
     return (
       <Grid item xs={12}>
-        <DashboardPanel title={panelData.title} data={panelData.data} dataKey="value" />
+        <DashboardPanel
+          title={metricsData[panel.id]?.title || panel.title}
+          data={metricsData[panel.id]?.data || []}
+          unit={metricsData[panel.id]?.unit || panel.unit}
+        />
       </Grid>
     );
   };
@@ -89,10 +92,11 @@ function App() {
           ml: { sm: `240px` },
         }}
       >
-        <Grid container spacing={3}>
+        <Grid container spacing={0.625}> {/* 5px spacing */}
           {renderPanels()}
         </Grid>
       </Box>
+      {isLoading && <SpaceshipLoader />}
     </Box>
   );
 }
