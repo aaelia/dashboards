@@ -18,15 +18,29 @@ function App() {
       setLoadStartTime(Date.now());
       try {
         const panelConfig = await getPanelConfig();
-        if (Array.isArray(panelConfig)) {
-          setPanels(panelConfig);
-          const results = await Promise.all(
-            panelConfig.map(panel => fetchMetrics(panel.id))
-          );
+        if (!Array.isArray(panelConfig)) {
+          console.error('Invalid panel configuration received:', panelConfig);
+          return;
+        }
+
+        setPanels(panelConfig);
+        
+        const results = await Promise.all(
+          panelConfig.map(async panel => {
+            try {
+              return await fetchMetrics(panel.id);
+            } catch (error) {
+              console.error(`Error fetching metrics for panel ${panel.id}:`, error);
+              return null;
+            }
+          })
+        );
 
         const newData = {};
         results.forEach((result, index) => {
-          newData[panels[index].id] = result;
+          if (result) {
+            newData[panelConfig[index].id] = result;
+          }
         });
 
         setMetricsData(newData);

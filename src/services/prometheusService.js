@@ -6,7 +6,9 @@ let dashboardConfig = { panels: [] };
 
 export const fetchMetrics = async (panelId) => {
   try {
-    const panel = dashboardConfig.panels.find(p => p.id === panelId);
+    // Get the latest configuration
+    const config = await getDashboardsConfig();
+    const panel = config.panels.find(p => p.id === panelId);
     if (!panel) {
       throw new Error(`Panel ${panelId} not found in configuration`);
     }
