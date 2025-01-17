@@ -1,5 +1,5 @@
 import { db } from '../config/firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore/lite';
 
 export const getDashboardsConfig = async () => {
   try {
