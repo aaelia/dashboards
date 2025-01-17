@@ -10,15 +10,17 @@ function App() {
   const [metricsData, setMetricsData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [loadStartTime, setLoadStartTime] = useState(Date.now());
-  const panels = getPanelConfig();
+  const [panels, setPanels] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       setLoadStartTime(Date.now());
       try {
+        const panelConfig = await getPanelConfig();
+        setPanels(panelConfig);
         const results = await Promise.all(
-          panels.map(panel => fetchMetrics(panel.id))
+          panelConfig.map(panel => fetchMetrics(panel.id))
         );
 
         const newData = {};

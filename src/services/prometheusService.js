@@ -1,7 +1,8 @@
 import axios from 'axios';
-import dashboardConfig from '../config/dashboards.json';
+import { getDashboardsConfig } from './dashboardService';
 
 const PROMETHEUS_URL = process.env.REACT_APP_PROMETHEUS_URL || 'http://localhost:9090';
+let dashboardConfig = { panels: [] };
 
 export const fetchMetrics = async (panelId) => {
   try {
@@ -39,4 +40,7 @@ export const fetchMetrics = async (panelId) => {
   }
 };
 
-export const getPanelConfig = () => dashboardConfig.panels;
+export const getPanelConfig = async () => {
+  dashboardConfig = await getDashboardsConfig();
+  return dashboardConfig.panels;
+};
