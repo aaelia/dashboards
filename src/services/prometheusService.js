@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getDashboardsConfig } from './dashboardService';
 
-const PROMETHEUS_URL = process.env.REACT_APP_PROMETHEUS_URL || 'http://localhost:9090';
+const PROMETHEUS_URL = process.env.REACT_APP_PROMETHEUS_URL || '/prometheus';
 let dashboardConfig = { panels: [] };
 
 export const fetchMetrics = async (panelId) => {

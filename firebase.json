@@ -1,0 +1,11 @@
+{
+  "firestore": {
+    "rules": {
+      "allow read, write": true
+    },
+    "cors": {
+      "origin": ["*"],
+      "methods": ["GET", "POST"]
+    }
+  }
+}
