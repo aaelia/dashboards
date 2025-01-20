@@ -27,15 +27,21 @@ const DashboardPanel = ({ title, data, unit }) => {
       <Typography variant="h6" gutterBottom>
         {title}
       </Typography>
-      <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="timestamp" />
-          <YAxis tickFormatter={formatValue} />
-          <Tooltip content={<CustomTooltip />} />
-          <Line type="monotone" dataKey="value" stroke="#0f172a" />
-        </LineChart>
-      </ResponsiveContainer>
+      {(!data || data.length === 0) ? (
+        <Typography variant="body1" color="text.secondary" sx={{ textAlign: 'center', mt: 10 }}>
+          No data available
+        </Typography>
+      ) : (
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="timestamp" />
+            <YAxis tickFormatter={formatValue} />
+            <Tooltip content={<CustomTooltip />} />
+            <Line type="monotone" dataKey="value" stroke="#0f172a" />
+          </LineChart>
+        </ResponsiveContainer>
+      )}
     </Paper>
   );
 };
