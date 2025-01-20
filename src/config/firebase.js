@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore/lite';
+import { getFirestore } from 'firebase/firestore/lite';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBHy5M2Uj4DpBBZJsXW-rhAJFHf97zO64Y",
@@ -13,10 +13,5 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-
-// Enable CORS for development
-if (process.env.NODE_ENV === 'development') {
-  connectFirestoreEmulator(db, 'localhost', 8080);
-}
 
 export { db };

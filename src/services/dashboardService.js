@@ -1,13 +1,13 @@
 import { db } from '../config/firebase';
-import { doc, getDoc } from 'firebase/firestore/lite';
+import { collection, getDocs } from 'firebase/firestore/lite';
 
 export const getDashboardsConfig = async () => {
   try {
-    const docRef = doc(db, 'config', 'dashboards');
-    const docSnap = await getDoc(docRef);
+    const querySnapshot = await getDocs(collection(db, 'config'));
+    const doc = querySnapshot.docs.find(doc => doc.id === 'dashboards');
     
-    if (docSnap.exists()) {
-      const data = docSnap.data();
+    if (doc) {
+      const data = doc.data();
       console.log('Firestore data:', data);
       return data;
     } else {
