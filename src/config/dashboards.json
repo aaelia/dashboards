@@ -27,6 +27,16 @@
       "timeRange": 300,
       "unit": "ms",
       "valueMultiplier": 1000
+    },
+    {
+      "id": "Total_requests",
+      "title": "Total Requests",
+      "menuText": "Total Requests",
+      "icon": "Storage",
+      "query": "http_requests_total",
+      "timeRange": 300,
+      "unit": "ms",
+      "valueMultiplier": 1000.0
     }
   ]
 }
