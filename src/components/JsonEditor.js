@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 
 const JsonEditor = () => {
   const [jsonData, setJsonData] = useState(null);
-  const docRef = doc(db, "dashboards", "dashboards"); // Change path accordingly
+  const docRef = doc(db, "dashboards", "0"); // Using the document ID "0" from the dashboards collection
 
   useEffect(() => {
     const fetchData = async () => {
@@ -17,6 +17,11 @@ const JsonEditor = () => {
         }
       } catch (error) {
         console.error("Error fetching document:", error);
+        console.error("Error details:", {
+          code: error.code,
+          message: error.message,
+          stack: error.stack
+        });
       }
     };
 
